@@ -1,4 +1,5 @@
 -- Rendering and highlighting module for ez-multi-cursor
+local Utils = require("ez-multi-cursor.utils")
 local M = {}
 
 M.namespace = vim.api.nvim_create_namespace("ez-multi-cursor")
@@ -31,29 +32,6 @@ function M.remove_highlight(cursorId, buf)
 	end
 end
 
---- Render_cursors render all the cursor on nvim window
----@param cursors table
-function M.render_cursors(cursors)
-	for i = 1, #cursors, 1 do
-		local c = cursors[i]
-		local id = M.add_highlight(c.y_cordinate - 1, c.x_cordinate, c.buf)
-		cursors[i].cursorId = id
-	end
-end
-
---- Un_render_cursors: This function un-render all the cursors from nvim window
----@param cursors table
-function M.un_render_cursors(cursors)
-	local current_buf = vim.api.nvim_get_current_buf()
-	vim.api.nvim_buf_clear_namespace(current_buf, M.namespace, 0, -1)
-	for i = 1, #cursors, 1 do
-		if cursors[i].cursorId then
-			M.remove_highlight(cursors[i].cursorId, cursors[i].buf)
-			cursors[i].cursorId = nil
-		end
-	end
-end
-
 --- Remove_All_Highlights: Remove all highlights at once
 ---@param buf integer
 function M.remove_all_highlights(buf)
@@ -73,6 +51,53 @@ end
 function M.setup_highlights()
 	if vim.fn.hlID("CursorBar") == 0 then
 		vim.api.nvim_set_hl(0, "CursorBar", { fg = "Yellow", bg = "NONE" })
+	end
+end
+
+--- Add n number cursors vertically
+--- @param n integer
+--- @param y integer
+function M.add_n_cursors_vertically(n, y)
+	local buf = vim.api.nvim_get_current_buf()
+	local current_window = vim.api.nvim_get_current_win()
+	local row, col = Utils.get_cursor_position(current_window)
+	local total_line = vim.api.nvim_buf_line_count(buf)
+
+	for i = 0, n - 1, 1 do
+		local target_row = row + (i * y)
+
+		-- Boundary check
+		if target_row >= 1 and target_row <= total_line then
+			local current_line = Utils.get_line(target_row - 1, buf)
+			local line_length = #current_line
+
+			-- Handle empty lines
+			if line_length == 0 then
+				Utils.replace_line(target_row - 1, " ", buf)
+				line_length = 1
+			end
+
+			-- Adjust column if line is shorter than current column
+			local target_col = col
+			if col >= line_length then
+				target_col = line_length - 1
+			end
+
+			-- Skip if there's already an extmark at this position
+			local existing_mark = Utils.is_there_already_an_extramark(target_row - 1, target_col, buf, M.namespace)
+			if existing_mark.exist then
+				goto continue
+			end
+
+			-- Add extmark cursor
+			vim.api.nvim_buf_set_extmark(buf, M.namespace, target_row - 1, target_col, {
+				end_row = target_row - 1,
+				end_col = target_col + 1,
+				hl_group = "Cursor",
+			})
+
+			::continue::
+		end
 	end
 end
 
