@@ -31,29 +31,6 @@ function M.remove_highlight(cursorId, buf)
 	end
 end
 
---- Render_cursors render all the cursor on nvim window
----@param cursors table
-function M.render_cursors(cursors)
-	for i = 1, #cursors, 1 do
-		local c = cursors[i]
-		local id = M.add_highlight(c.y_cordinate - 1, c.x_cordinate, c.buf)
-		cursors[i].cursorId = id
-	end
-end
-
---- Un_render_cursors: This function un-render all the cursors from nvim window
----@param cursors table
-function M.un_render_cursors(cursors)
-	local current_buf = vim.api.nvim_get_current_buf()
-	vim.api.nvim_buf_clear_namespace(current_buf, M.namespace, 0, -1)
-	for i = 1, #cursors, 1 do
-		if cursors[i].cursorId then
-			M.remove_highlight(cursors[i].cursorId, cursors[i].buf)
-			cursors[i].cursorId = nil
-		end
-	end
-end
-
 --- Remove_All_Highlights: Remove all highlights at once
 ---@param buf integer
 function M.remove_all_highlights(buf)
