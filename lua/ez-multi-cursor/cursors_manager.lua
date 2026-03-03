@@ -8,6 +8,7 @@ local M = {}
 -- Storing multiple cursors positions
 M.cursors = {}
 
+
 function M.add_or_remove_cursor()
 	local buf = vim.api.nvim_get_current_buf()
 	local current_window = vim.api.nvim_get_current_win()
@@ -35,11 +36,6 @@ function M.add_or_remove_cursor()
 		end_col = col + 1,
 		hl_group = "Cursor"
 	})
-end
-
---- Clear all cursors
-function M.clear_all_cursors()
-	M.cursors = {}
 end
 
 return M
