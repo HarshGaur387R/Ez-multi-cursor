@@ -22,7 +22,12 @@ function M.add_or_remove_cursor()
 
 	if mark.exist then
 		vim.api.nvim_buf_del_extmark(buf, NAMESPACE, mark.id)
-		return
+
+		local cursors = vim.api.nvim_buf_get_extmarks(buf, NAMESPACE, 0, -1, { details = true })
+
+		if #cursors == 0 then M.active = false end
+
+		return;
 	end
 
 	if #current_line == 0 then

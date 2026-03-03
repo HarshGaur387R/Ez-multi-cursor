@@ -41,7 +41,7 @@ function M.setup(opts)
 	vim.keymap.set('n', '<Esc>', function()
 		local buf = vim.api.nvim_get_current_buf()
 		Rendering.remove_all_highlights(buf)
-		-- Change active state to false
+		CursorsManager.active = false
 		return "<Esc>"
 	end, { expr = true })
 
@@ -79,7 +79,7 @@ function M.setup(opts)
 		callback = function()
 			local buf = vim.api.nvim_get_current_buf()
 			Rendering.remove_all_highlights(buf)
-			-- Change active state to false
+			CursorsManager.active = false
 		end,
 	})
 
