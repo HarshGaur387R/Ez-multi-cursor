@@ -1,5 +1,6 @@
 -- Rendering and highlighting module for ez-multi-cursor
 local Utils = require("ez-multi-cursor.utils")
+local TextInsertion = require("ez-multi-cursor.text_insertion_state")
 local M = {}
 
 M.namespace = vim.api.nvim_create_namespace("ez-multi-cursor")
@@ -18,6 +19,7 @@ function M.add_highlight(row, col, buf)
 			end_col = col + 1,
 			hl_group = "Cursor",
 		})
+		TextInsertion.setState(true)
 	end
 	return cursorId
 end
@@ -90,12 +92,7 @@ function M.add_n_cursors_vertically(n, y)
 				goto continue
 			end
 
-			-- Add extmark cursor
-			vim.api.nvim_buf_set_extmark(buf, M.namespace, target_row - 1, target_col, {
-				end_row = target_row - 1,
-				end_col = target_col + 1,
-				hl_group = "Cursor",
-			})
+			M.add_highlight(target_row - 1, target_col, buf)
 
 			::continue::
 		end
