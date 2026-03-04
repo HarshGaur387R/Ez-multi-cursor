@@ -7,9 +7,7 @@ local CursorsManager
 local Rendering
 local Movement
 local TextOperations
-
--- Expose cursors for module access
-M.enabled = false
+local TextInsertionState
 
 --- Configure the plugin
 ---@param opts table
@@ -21,6 +19,7 @@ function M.setup(opts)
 		Rendering = require("ez-multi-cursor.rendering")
 		Movement = require("ez-multi-cursor.movement")
 		TextOperations = require("ez-multi-cursor.text_operations")
+		TextInsertionState = require("ez-multi-cursor.text_insertion_state")
 
 		-- Expose cursors for module access
 		M.cursors = CursorsManager.cursors
@@ -38,10 +37,17 @@ function M.setup(opts)
 		CursorsManager.add_or_remove_cursor()
 	end, { desc = "Adds a psuedo cursor at current cursor" })
 
+	vim.keymap.set('n', '<BS>', function()
+		-- Call remove character if state is true
+		if TextInsertionState.getState() then
+			TextOperations.remove_character()
+		end
+	end, { desc = "Remove character before each cursor (Backspace)" })
+
 	vim.keymap.set('n', '<Esc>', function()
 		local buf = vim.api.nvim_get_current_buf()
 		Rendering.remove_all_highlights(buf)
-		CursorsManager.active = false
+		TextInsertionState.setState(false)
 		return "<Esc>"
 	end, { expr = true })
 
@@ -79,7 +85,7 @@ function M.setup(opts)
 		callback = function()
 			local buf = vim.api.nvim_get_current_buf()
 			Rendering.remove_all_highlights(buf)
-			CursorsManager.active = false
+			TextInsertionState.setState(false)
 		end,
 	})
 
