@@ -35,11 +35,7 @@ function M.add_or_remove_cursor()
 		col = 0
 	end
 
-	vim.api.nvim_buf_set_extmark(buf, NAMESPACE, row - 1, col, {
-		end_row = row - 1,
-		end_col = col + 1,
-		hl_group = "Cursor"
-	})
+	Rendering.add_highlight(row - 1, col, buf)
 end
 
 return M
