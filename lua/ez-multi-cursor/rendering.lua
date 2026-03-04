@@ -1,5 +1,6 @@
 -- Rendering and highlighting module for ez-multi-cursor
 local Utils = require("ez-multi-cursor.utils")
+local CursorManager = require("ez-multi-cursor.cursors_manager")
 local M = {}
 
 M.namespace = vim.api.nvim_create_namespace("ez-multi-cursor")
@@ -18,6 +19,7 @@ function M.add_highlight(row, col, buf)
 			end_col = col + 1,
 			hl_group = "Cursor",
 		})
+		CursorManager.active = true
 	end
 	return cursorId
 end
