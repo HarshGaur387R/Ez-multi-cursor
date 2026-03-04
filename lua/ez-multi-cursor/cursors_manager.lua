@@ -1,12 +1,10 @@
 -- Cursor collection manager for ez-multi-cursor
 local Rendering = require("ez-multi-cursor.rendering")
 local Utils = require("ez-multi-cursor.utils")
+local TextInsertion = require("ez-multi-cursor.text_insertion_state")
 local NAMESPACE = Rendering.namespace
 
 local M = {}
-
--- Storing multiple cursors positions
-M.active = false
 
 function M.add_or_remove_cursor()
 	local buf = vim.api.nvim_get_current_buf()
@@ -25,8 +23,9 @@ function M.add_or_remove_cursor()
 
 		local cursors = vim.api.nvim_buf_get_extmarks(buf, NAMESPACE, 0, -1, { details = true })
 
-		if #cursors == 0 then M.active = false end
-
+		if #cursors == 0 then
+			TextInsertion.setState(false)
+		end
 		return;
 	end
 
