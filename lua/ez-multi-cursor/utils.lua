@@ -44,7 +44,7 @@ end
 ---@param target_col integer
 ---@param buf integer
 ---@param namespace integer
----@return table
+---@return {exist : boolean, id : integer}
 function M.is_there_already_an_extramark(target_row, target_col, buf, namespace)
 	local existing_extramark = vim.api.nvim_buf_get_extmarks(buf, namespace, { target_row, target_col },
 		{ target_row, target_col },
